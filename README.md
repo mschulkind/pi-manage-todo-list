@@ -33,6 +33,13 @@ https://github.com/user-attachments/assets/8efa7668-bdd8-4750-9c8b-638f15c32e4a
 - ✓ **Enhanced feedback**: Progress stats and continuation instructions in tool responses
 - ✓ **Small list detection**: Warns when todo list might be unnecessary
 
+## Fork display change
+
+This fork retains [tintinweb's upstream extension](https://github.com/tintinweb/pi-manage-todo-list)
+and its MIT license. Todo calls and results render without Pi's filled outer tool
+box. The existing collapsed progress count, expanded task titles/statuses, errors,
+model-facing results, session reconstruction, and editor widget are unchanged.
+
 ## Install
 
 **Option A — Install from npm:**

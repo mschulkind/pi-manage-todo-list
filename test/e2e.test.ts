@@ -312,6 +312,11 @@ describe("session persistence / reconstruction", () => {
 });
 
 describe("tool result rendering", () => {
+  it("uses an unboxed tool shell with the existing expandable renderers", () => {
+    const s = setup();
+    expect(s.tool().renderShell).toBe("self");
+  });
+
   it("renderCall shows operation and item count", () => {
     const s = setup();
 

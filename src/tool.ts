@@ -83,6 +83,7 @@ IMPORTANT: Mark todos completed as soon as they are done. Do not batch completio
 
 export function createManageTodoListTool(state: TodoStateManager, onUpdate: () => void) {
   return {
+    renderShell: "self" as const,
     name: "manage_todo_list",
     label: "Todo List",
     description: TOOL_DESCRIPTION,
