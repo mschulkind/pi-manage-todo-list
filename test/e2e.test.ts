@@ -312,9 +312,9 @@ describe("session persistence / reconstruction", () => {
 });
 
 describe("tool result rendering", () => {
-  it("uses an unboxed tool shell with the existing expandable renderers", () => {
+  it("leaves the shell to core with the existing expandable renderers", () => {
     const s = setup();
-    expect(s.tool().renderShell).toBe("self");
+    expect(s.tool().renderShell).toBeUndefined();
   });
 
   it("renderCall shows operation and item count", () => {
@@ -471,5 +471,25 @@ describe("reconstruction can clear a previously loaded list", () => {
 
     expect(renderWidget(s.widgets)).toBeUndefined();
     expect(textOf(await read(s))).toContain("No todos");
+  });
+});
+
+
+describe("compact metadata", () => {
+  it("reports active plan progress, warnings and validation without payloads", async () => {
+    const s = setup();
+    const result = await write(s, todos(["completed", "in-progress"]));
+    const input = { args: { operation: "write" }, result, isError: false, isPartial: false, executionStarted: true };
+    const hints = s.tool().getCompactHints(input);
+    expect(hints.progress).toEqual({ completed: 1, total: 2 });
+    expect(hints.status).toBe("warning");
+    expect(hints.summary).toContain("Small todo list");
+    expect(hints.counts).toContainEqual({ label: "active", value: 1 });
+    expect(JSON.stringify(hints)).not.toContain("Task 1");
+    const failed = await write(s, undefined as any);
+    expect(s.tool().getCompactHints({ ...input, result: failed, isError: true })).toMatchObject({ status: "error", error: "todoList required" });
+    expect(s.tool().getCompactHints({ ...input, result: undefined, isPartial: true })).toMatchObject({ status: "running" });
+    await write(s, []);
+    expect(s.tool().getCompactHints({ ...input, result: await read(s) }).progress).toEqual({ completed: 0, total: 0 });
   });
 });

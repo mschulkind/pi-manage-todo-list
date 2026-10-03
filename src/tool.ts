@@ -83,11 +83,35 @@ IMPORTANT: Mark todos completed as soon as they are done. Do not batch completio
 
 export function createManageTodoListTool(state: TodoStateManager, onUpdate: () => void) {
   return {
-    renderShell: "self" as const,
     name: "manage_todo_list",
     label: "Todo List",
     description: TOOL_DESCRIPTION,
     parameters: ManageTodoListParams,
+
+    // Structurally typed public hints input; old SDKs ignore the extra method.
+    getCompactHints(input: {
+      args: ManageTodoListInput;
+      result?: AgentToolResult<TodoDetails | undefined>;
+      isError: boolean;
+      isPartial: boolean;
+      executionStarted: boolean;
+    }) {
+      const details = input.result?.details;
+      const todos = details?.todos;
+      const completed = todos?.filter((todo) => todo.status === "completed").length ?? 0;
+      const active = todos?.filter((todo) => todo.status === "in-progress").length ?? 0;
+      const small = details?.operation === "write" && !details.error && (todos?.length ?? 0) < 3;
+      const failed = input.isError || Boolean(details?.error);
+      const status: "error" | "warning" | "running" | "completed" | "info" = failed ? "error" : small ? "warning" : input.isPartial || (!input.result && input.executionStarted) ? "running" : input.result ? "completed" : "info";
+      return {
+        label: "Todos",
+        status,
+        error: failed ? (details?.error ?? "Todo operation failed").slice(0, 160) : small ? "Small todo list" : undefined,
+        summary: small ? "Small todo list (<3 items)" : input.args.operation,
+        progress: todos ? { completed, total: todos.length } : undefined,
+        counts: todos ? [{ label: "active", value: active }, { label: "pending", value: todos.length - completed - active }] : undefined,
+      };
+    },
 
     async execute(
       _toolCallId: string,

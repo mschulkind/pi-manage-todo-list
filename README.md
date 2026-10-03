@@ -36,9 +36,12 @@ https://github.com/user-attachments/assets/8efa7668-bdd8-4750-9c8b-638f15c32e4a
 ## Fork display change
 
 This fork retains [tintinweb's upstream extension](https://github.com/tintinweb/pi-manage-todo-list)
-and its MIT license. Todo calls and results render without Pi's filled outer tool
-box. The existing collapsed progress count, expanded task titles/statuses, errors,
-model-facing results, session reconstruction, and editor widget are unchanged.
+and its MIT license. Core owns the compact transcript shell on Pi versions that
+support compact hints. The tool supplies progress, active/pending counts, small
+plan warnings, and validation errors without exposing todo descriptions. Older
+SDKs ignore hints and use the original renderers and default shell. Expanded task
+titles/statuses, model-facing results, session reconstruction, and the editor
+widget are unchanged.
 
 ## Install
 
